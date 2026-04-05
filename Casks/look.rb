@@ -2,7 +2,7 @@ cask "look" do
   # Update these values for each release.
   owner = "kunkka19xx"
   repo = "look"
-  app_name = "Look"
+  app_name = "lookapp"
   release_tag_prefix = "v"
   release_asset_suffix = "macOS.zip"
 
