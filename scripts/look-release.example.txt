@@ -1,0 +1,3 @@
+version=0.1.7
+artifact=Look-0.1.7-macOS.zip
+sha256=0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
