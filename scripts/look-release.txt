@@ -1,3 +1,3 @@
-version=0.5.9
-artifact=Look-0.5.9-macOS.zip
-sha256=fad4f8bb99a226869dcc97586be4a3d4597ed58c3005a3f09af4533da43407f9
+version=0.6.0
+artifact=Look-0.6.0-macOS.zip
+sha256=a1f9e67e92d6f5dba6528a77d3bf2a65e3b9ca1f6fde381d1de80e4f1588c14c
