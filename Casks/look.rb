@@ -4,8 +4,8 @@ cask "look" do
   app_name = "Look"
   release_tag_prefix = "v"
   release_asset_suffix = "macOS.zip"
-  version "0.6.9"
-  sha256 "1ac09a5a2379442591d6f199454afe7c975c5be0c5a70c2cd2855aa06e0f8867"
+  version "0.6.10"
+  sha256 "dcb8319905af4b022564953336c33095750c7961188116a4d51054120b09ba62"
   url "https://github.com/#{owner}/#{repo}/releases/download/#{release_tag_prefix}#{version}/#{app_name}-#{version}-#{release_asset_suffix}"
   name repo
   desc "Keyboard-first local launcher for macOS"
