@@ -1,3 +1,3 @@
 version=0.6.11
 artifact=Look-0.6.11-macOS.zip
-sha256=a52027d768e600e1d8f1e6446b5b1b571d68ba312aeabfaf1eee766bf7c189cb
+sha256=cd2c10200b0f2a5e68086ad5a2bae27d070d82f0faf59c15a68cf489f385b50e
