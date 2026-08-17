@@ -5,7 +5,7 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Usage:
-  scripts/update-look-cask.sh <manifest.txt>
+  scripts/update-look-cask.sh <manifest.txt> [--force]
 
 Manifest format:
   version=0.1.7
@@ -20,15 +20,35 @@ What this script does:
 Notes:
   - Artifact is validated against Look-<version>-macOS.zip.
   - Existing backup casks are included in conflicts_with for the new backup file.
+  - --force re-releases the current version in place (for a rebuilt artifact
+    with a new sha256). No backup cask is created, since the version is
+    unchanged and a backup would duplicate the main cask.
 EOF
 }
 
-if [[ "${1:-}" == "-h" || "${1:-}" == "--help" || $# -ne 1 ]]; then
-  usage
-  exit $(( $# == 1 ? 0 : 1 ))
+force=0
+manifest_file=""
+
+for arg in "$@"; do
+  case "$arg" in
+    -h|--help) usage; exit 0 ;;
+    --force|-f) force=1 ;;
+    -*) echo "Error: unknown option: $arg" >&2; usage >&2; exit 1 ;;
+    *)
+      if [[ -n "$manifest_file" ]]; then
+        echo "Error: multiple manifest paths given" >&2
+        exit 1
+      fi
+      manifest_file="$arg"
+      ;;
+  esac
+done
+
+if [[ -z "$manifest_file" ]]; then
+  usage >&2
+  exit 1
 fi
 
-manifest_file="$1"
 if [[ ! -f "$manifest_file" ]]; then
   echo "Error: manifest file not found: $manifest_file" >&2
   exit 1
@@ -88,13 +108,43 @@ if [[ -z "$current_version" || -z "$current_sha256" ]]; then
   exit 1
 fi
 
+same_version=0
 if [[ "$version" == "$current_version" ]]; then
-  echo "Error: new version matches current version ($current_version)" >&2
-  exit 1
+  if [[ "$force" -ne 1 ]]; then
+    echo "Error: new version matches current version ($current_version)" >&2
+    echo "Re-run with --force to replace the artifact in place." >&2
+    exit 1
+  fi
+  same_version=1
+  if [[ "$sha256" == "$current_sha256" ]]; then
+    echo "Nothing to do: ${main_cask#${repo_root}/} already at version $version with this sha256"
+    exit 0
+  fi
 fi
 
 backup_cask_name="look@${current_version}"
 backup_cask_file="$casks_dir/${backup_cask_name}.rb"
+
+if [[ "$same_version" -eq 1 ]]; then
+  # Forced in-place replace: the version is unchanged, so a backup cask would
+  # just duplicate the main one. Only the sha256 moves.
+  ruby - "$main_cask" "$version" "$sha256" <<'RUBY'
+path, new_version, new_sha = ARGV
+content = File.read(path)
+content.sub!(/^\s*version\s+"[^"]+"/, "  version \"#{new_version}\"")
+content.sub!(/^\s*sha256\s+"[^"]+"/, "  sha256 \"#{new_sha}\"")
+File.write(path, content)
+RUBY
+
+  echo "Forced in-place replace of version ${version}: ${main_cask#${repo_root}/}"
+  echo "  sha256 ${current_sha256}"
+  echo "       -> ${sha256}"
+  echo
+  echo "Next steps:"
+  echo "  brew audit --cask --strict Casks/look.rb"
+  echo "  git add Casks/look.rb"
+  exit 0
+fi
 
 if [[ -f "$backup_cask_file" ]]; then
   echo "Error: backup cask already exists: $backup_cask_file" >&2
