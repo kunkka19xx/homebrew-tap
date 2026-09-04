@@ -75,8 +75,11 @@ formula, out, version, tag = sys.argv[1:5]
 sums = dict(a.split("=", 1) for a in sys.argv[5:])
 text = open(formula).read()
 
-text = re.sub(r'(^\s*version\s+)"[^"]*"', rf'\g<1>"{version}"', text, count=1, flags=re.M)
-text = re.sub(r'(releases/download/)v[^/]+/', rf'\g<1>{tag}/', text)
+# The tag in the url is the only place the version is written: brew scans it
+# from there, and `brew audit` rejects a `version` stanza that repeats it.
+text, tags = re.subn(r'(releases/download/)v[^/]+/', rf'\g<1>{tag}/', text)
+if not tags:
+    sys.exit("formula has no release url to retag")
 
 seen = set()
 def pair(m):
@@ -103,4 +106,4 @@ PY_END
 # formula that is not world-readable is an offence `brew style` fails on.
 install -m 644 "$tmp" "$formula"
 echo "wrote $formula for $tag"
-grep -E 'version |sha256 ' "$formula"
+grep -E 'download/|sha256 ' "$formula"

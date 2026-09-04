@@ -6,7 +6,6 @@
 class Lgtm < Formula
   desc "Read what your coding agent just wrote, and point at the lines when you reply"
   homepage "https://github.com/kunkka19xx/lgtm"
-  version "0.1.0"
   license "Apache-2.0"
 
   # Prebuilt, one binary per target. lgtm has no C dependencies and cross

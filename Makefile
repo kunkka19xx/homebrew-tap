@@ -100,7 +100,7 @@ publish-lgtm:
 	if git diff --cached --quiet; then \
 		echo "Nothing to publish: no staged changes."; \
 	else \
-		v=$$(ruby -ne 'if $$_ =~ /^\s*version\s+"([^"]+)"/; puts $$1; exit; end' Formula/lgtm.rb); \
+		v=$$(ruby -ne 'if $$_ =~ %r{/download/v([^/]+)/}; puts $$1; exit; end' Formula/lgtm.rb); \
 		git commit -m "lgtm $$v"; \
 		git push; \
 	fi
