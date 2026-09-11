@@ -13,23 +13,23 @@ class Lgtm < Formula
   # asking a user for a Zig toolchain.
   on_macos do
     on_arm do
-      url "https://github.com/kunkka19xx/lgtm/releases/download/v0.1.3/lgtm-aarch64-macos.tar.gz"
-      sha256 "789e7d8345e37831a0eeccd1da11e211c2da7f2893cacc9dcfea468a0de548bc"
+      url "https://github.com/kunkka19xx/lgtm/releases/download/v0.1.4/lgtm-aarch64-macos.tar.gz"
+      sha256 "f54cc8bd17618adb107861a0b8b1a43e5bab72ae6d7ef262de3504352fdd485b"
     end
     on_intel do
-      url "https://github.com/kunkka19xx/lgtm/releases/download/v0.1.3/lgtm-x86_64-macos.tar.gz"
-      sha256 "39fa56eb27bb5195f6d5eabc1f65d84300b0107bf6661a74b0117d817c666eb2"
+      url "https://github.com/kunkka19xx/lgtm/releases/download/v0.1.4/lgtm-x86_64-macos.tar.gz"
+      sha256 "8fa1dd3d9cae6c01a964195cb85d4f5472c218997eeb2ec3339c048ae42f8efe"
     end
   end
 
   on_linux do
     on_arm do
-      url "https://github.com/kunkka19xx/lgtm/releases/download/v0.1.3/lgtm-aarch64-linux.tar.gz"
-      sha256 "9079611f44b805a6ed336945712bc8f51e83f3a31527a2d9c10791d94772f4e5"
+      url "https://github.com/kunkka19xx/lgtm/releases/download/v0.1.4/lgtm-aarch64-linux.tar.gz"
+      sha256 "2ec30e22b496fb7232ccdee546ee026c44402b2d28f29615b926753f7c0c1ef4"
     end
     on_intel do
-      url "https://github.com/kunkka19xx/lgtm/releases/download/v0.1.3/lgtm-x86_64-linux.tar.gz"
-      sha256 "6ba5d4b2bc2fbfafabd5196b5d864a25738ff75e4817a45c947ec1b8e6ca9863"
+      url "https://github.com/kunkka19xx/lgtm/releases/download/v0.1.4/lgtm-x86_64-linux.tar.gz"
+      sha256 "999b7d1ddac09d9d72e62e8460681527476b1ebfe9ef684b0b7e0f802adf66c1"
     end
   end
 
