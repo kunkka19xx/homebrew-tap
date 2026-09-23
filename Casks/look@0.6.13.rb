@@ -1,12 +1,12 @@
-cask "look@0.6.9" do
+cask "look@0.6.13" do
   owner = "kunkka19xx"
   repo = "look"
   app_name = "Look"
   release_tag_prefix = "v"
   release_asset_suffix = "macOS.zip"
 
-  version "0.6.9"
-  sha256 "1ac09a5a2379442591d6f199454afe7c975c5be0c5a70c2cd2855aa06e0f8867"
+  version "0.6.13"
+  sha256 "9906207a56ae0e14e7a1055088e81595009bd0de133f0c2e369db3b8773d0b92"
 
   url "https://github.com/#{owner}/#{repo}/releases/download/#{release_tag_prefix}#{version}/#{app_name}-#{version}-#{release_asset_suffix}"
   name "look"
