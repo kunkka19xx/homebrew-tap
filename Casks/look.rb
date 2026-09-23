@@ -1,6 +1,6 @@
 cask "look" do
-  version "0.7.0"
-  sha256 "eca3f75f4a24363184fab0361993149605fcd579f68e27ddfe95331c94336c2c"
+  version "0.7.1"
+  sha256 "dfe0b638227ae9c7b8b817d40ae2b8ed6a75670eaa91ba96b1891b8844b1d2f8"
 
   url "https://github.com/kunkka19xx/look/releases/download/v#{version}/Look-#{version}-macOS.zip"
   name "Look"

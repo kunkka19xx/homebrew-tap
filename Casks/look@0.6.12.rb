@@ -17,6 +17,6 @@ cask "look@0.6.12" do
     skip "Versioned cask"
   end
 
-  conflicts_with cask: ["look", "look@0.6.10", "look@0.6.11", "look@0.6.13"]
+  conflicts_with cask: ["look", "look@0.6.11", "look@0.6.13", "look@0.7.0"]
   app "#{app_name}.app"
 end
