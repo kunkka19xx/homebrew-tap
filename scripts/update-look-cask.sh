@@ -5,7 +5,8 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Usage:
-  scripts/update-look-cask.sh <manifest.txt> [--force]
+  scripts/update-look-cask.sh <manifest.txt> [--force] [--keep N]
+  scripts/update-look-cask.sh --prune [--keep N]
 
 Manifest format:
   version=0.1.7
@@ -16,6 +17,9 @@ What this script does:
   1) Reads version/artifact/sha256 from the manifest file.
   2) Creates a backup cask from current Casks/look.rb (look@<old_version>.rb).
   3) Updates Casks/look.rb to the new version and sha256.
+  4) Prunes versioned casks, keeping only the newest N (default 4, which with
+     Casks/look.rb makes 5 versions), and
+     rewrites each survivor's conflicts_with to the casks that still exist.
 
 Notes:
   - Artifact is validated against Look-<version>-macOS.zip.
@@ -23,26 +27,77 @@ Notes:
   - --force re-releases the current version in place (for a rebuilt artifact
     with a new sha256). No backup cask is created, since the version is
     unchanged and a backup would duplicate the main cask.
+  - --prune runs only step 4, without a manifest.
 EOF
 }
 
 force=0
+prune_only=0
+keep=4
 manifest_file=""
 
-for arg in "$@"; do
-  case "$arg" in
+while [[ $# -gt 0 ]]; do
+  case "$1" in
     -h|--help) usage; exit 0 ;;
-    --force|-f) force=1 ;;
-    -*) echo "Error: unknown option: $arg" >&2; usage >&2; exit 1 ;;
+    --force|-f) force=1; shift ;;
+    --prune) prune_only=1; shift ;;
+    --keep) keep="${2:-}"; shift 2 ;;
+    -*) echo "Error: unknown option: $1" >&2; usage >&2; exit 1 ;;
     *)
       if [[ -n "$manifest_file" ]]; then
         echo "Error: multiple manifest paths given" >&2
         exit 1
       fi
-      manifest_file="$arg"
+      manifest_file="$1"
+      shift
       ;;
   esac
 done
+
+if [[ ! "$keep" =~ ^[0-9]+$ ]]; then
+  echo "Error: --keep must be a non-negative integer" >&2
+  exit 1
+fi
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+casks_dir="$repo_root/Casks"
+main_cask="$casks_dir/look.rb"
+
+# Keeps the newest $keep look@<version>.rb casks, ordered by version rather
+# than by name ("0.6.10" sorts after "0.6.9"), and deletes the rest. Survivors
+# get conflicts_with rewritten so none of them names a cask that is gone.
+prune_versioned_casks() {
+  ruby - "$casks_dir" "$keep" <<'RUBY'
+require "rubygems"
+
+casks_dir, keep = ARGV[0], Integer(ARGV[1])
+casks = Dir[File.join(casks_dir, "look@*.rb")].map do |path|
+  name = File.basename(path, ".rb")
+  [name, Gem::Version.new(name.delete_prefix("look@")), path]
+end
+casks.sort_by! { |_, version, _| version }
+
+removed = casks.length > keep ? casks.shift(casks.length - keep) : []
+removed.each do |name, _, path|
+  File.delete(path)
+  puts "Removed old cask: Casks/#{File.basename(path)}"
+end
+
+casks.each do |name, _, path|
+  others = ["look"] + casks.map(&:first).reject { |other| other == name }
+  list = others.map { |other| "\"#{other}\"" }.join(", ")
+  content = File.read(path)
+  content.sub!(/^(\s*)conflicts_with cask: \[[^\]]*\]/) { "#{$1}conflicts_with cask: [#{list}]" }
+  File.write(path, content)
+end
+puts "Kept #{casks.length} versioned cask(s): #{casks.map(&:first).join(", ")}"
+RUBY
+}
+
+if [[ "$prune_only" -eq 1 ]]; then
+  prune_versioned_casks
+  exit 0
+fi
 
 if [[ -z "$manifest_file" ]]; then
   usage >&2
@@ -53,10 +108,6 @@ if [[ ! -f "$manifest_file" ]]; then
   echo "Error: manifest file not found: $manifest_file" >&2
   exit 1
 fi
-
-repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-casks_dir="$repo_root/Casks"
-main_cask="$casks_dir/look.rb"
 
 if [[ ! -f "$main_cask" ]]; then
   echo "Error: missing cask file: $main_cask" >&2
@@ -207,7 +258,10 @@ RUBY
 
 echo "Created backup: ${backup_cask_file#${repo_root}/}"
 echo "Updated main cask to version ${version}: ${main_cask#${repo_root}/}"
+
+prune_versioned_casks
+
 echo
 echo "Next steps:"
-echo "  brew audit --cask --strict Casks/look.rb"
-echo "  git add Casks/look.rb Casks/${backup_cask_name}.rb"
+echo "  brew style Casks/look.rb"
+echo "  git add Casks"

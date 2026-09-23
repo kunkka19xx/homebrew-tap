@@ -1,4 +1,4 @@
-.PHONY: help sync release release-look publish audit-look \
+.PHONY: help sync release release-look prune-look publish audit-look \
         style style-look style-lgtm \
         release-lgtm publish-lgtm audit-lgtm
 
@@ -18,6 +18,11 @@ ifneq ($(version),)
 VERSION_FLAG := --version $(version)
 endif
 
+# How many look@<version> casks to keep besides look.rb (4 + look.rb = 5 versions);
+# older ones are deleted on each release.
+keep ?= 4
+KEEP_FLAG := --keep $(keep)
+
 help:
 	@printf "Targets:\n"
 	@printf "  make release           fetch latest $(SOURCE_REPO) release, update cask\n"
@@ -25,6 +30,8 @@ help:
 	@printf "  make release version=0.6.12   pin a specific release\n"
 	@printf "  make release force=1   re-release same version with a new sha256\n"
 	@printf "  make release sync=0    skip the fetch, use $(MANIFEST) as-is\n"
+	@printf "  make release keep=3    keep 3 look@<version> casks instead of 4\n"
+	@printf "  make prune-look [keep=N]      only prune old look@<version> casks\n"
 	@printf "  make sync              only refresh $(MANIFEST) from the latest release\n"
 	@printf "  make release-look manifest=/path/release.txt [force=1]\n"
 	@printf "  make publish           commit + push current cask changes\n"
@@ -44,7 +51,7 @@ release:
 ifneq ($(sync),0)
 	@$(MAKE) --no-print-directory sync
 endif
-	@./scripts/update-look-cask.sh "$(MANIFEST)" $(FORCE_FLAG)
+	@./scripts/update-look-cask.sh "$(MANIFEST)" $(FORCE_FLAG) $(KEEP_FLAG)
 ifeq ($(push),1)
 	@$(MAKE) --no-print-directory publish
 endif
@@ -55,7 +62,10 @@ release-look:
 		echo "Usage: make release-look manifest=/path/release.txt"; \
 		exit 1; \
 	fi
-	@./scripts/update-look-cask.sh "$(manifest)" $(FORCE_FLAG)
+	@./scripts/update-look-cask.sh "$(manifest)" $(FORCE_FLAG) $(KEEP_FLAG)
+
+prune-look:
+	@./scripts/update-look-cask.sh --prune $(KEEP_FLAG)
 
 publish:
 	@set -e; \
