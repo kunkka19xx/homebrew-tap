@@ -1,3 +1,0 @@
-version=0.7.1
-artifact=Look-0.7.1-macOS.zip
-sha256=dfe0b638227ae9c7b8b817d40ae2b8ed6a75670eaa91ba96b1891b8844b1d2f8
