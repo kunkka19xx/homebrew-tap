@@ -14,22 +14,22 @@ class Lgtm < Formula
   on_macos do
     on_arm do
       url "https://github.com/kunkka19xx/lgtm/releases/download/v0.1.6/lgtm-aarch64-macos.tar.gz"
-      sha256 "970042c35021c54076745fdfae0f289b4a3c2fa3fe50e03dd8d8243d3743f9c5"
+      sha256 "24485090d4f20df2dbffaba0df40f14e3cfef601c1166e5b016fdd66631d453a"
     end
     on_intel do
       url "https://github.com/kunkka19xx/lgtm/releases/download/v0.1.6/lgtm-x86_64-macos.tar.gz"
-      sha256 "297ff03185a83851770b9e7206aadd52ce962cff357dfbaafacc38040f7f4f68"
+      sha256 "54f0f65b7946d2b964a3d85eca829d7dc23a69894dc267f5e3ab352744dd93e4"
     end
   end
 
   on_linux do
     on_arm do
       url "https://github.com/kunkka19xx/lgtm/releases/download/v0.1.6/lgtm-aarch64-linux.tar.gz"
-      sha256 "4d66f9cdef8c4500e4d23b318a0dc4052d0cd8d319c36adc1f4b426bdd027a2e"
+      sha256 "ffda8a199d5d31c64250fc85c9edf52da169b95f17e3cce5acadabbb896902df"
     end
     on_intel do
       url "https://github.com/kunkka19xx/lgtm/releases/download/v0.1.6/lgtm-x86_64-linux.tar.gz"
-      sha256 "5945031143b68e80448b6866a96b6fbbd7fd8bb2bfba6ea66aac29adfad010cf"
+      sha256 "e8b6a9e8c3d812baa90dfa050a197b438a74daf45a707f8dcfde278ce88ce897"
     end
   end
 
